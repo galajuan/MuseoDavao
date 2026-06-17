@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop — Davao Heritage Museum</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<nav class="nav opaque" id="main-nav">
+  <a href="index.html" class="nav-brand">
+    <div class="nav-brand-icon">🏛️</div>
+    <div class="nav-brand-text"><span class="nav-brand-name">Davao Heritage Museum</span><span class="nav-brand-sub">Davao City, Philippines</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="collection.html">Collection</a></li>
+    <li><a href="shop.html" class="active">Shop</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="nav-cart-btn" id="btn-cart">🛒 Cart<span id="cart-badge" class="hidden">0</span></button>
+    <button class="btn btn-outline-white btn-sm" id="btn-login" onclick="openModal('modal-auth')">Sign In</button>
+    <button class="btn btn-gold btn-sm" id="btn-register" onclick="openModal('modal-auth')">Register</button>
+    <div id="user-menu" class="hidden" style="display:flex;align-items:center;gap:0.5rem">
+      <span id="user-label" style="color:rgba(255,255,255,.8);font-size:0.85rem"></span>
+      <button class="btn btn-outline-white btn-sm" id="btn-signout">Sign Out</button>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="breadcrumb"><a href="index.html">Home</a><span>/</span>Shop</div>
+    <h1>Museum Shop</h1>
+    <p>Curated replicas, books, crafts, and souvenirs. Sign in to purchase.</p>
+  </div>
+</div>
+
+<section class="section" style="padding-top:2.5rem">
+  <div class="container">
+
+    <div class="auth-banner" id="auth-banner" style="display:none">
+      <p>🔒 <strong>Account required to purchase.</strong> Create a free account or sign in — it takes less than a minute.</p>
+      <button class="btn btn-gold" onclick="openModal('modal-auth')">Sign In / Register</button>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-chip active" onclick="setFilter(this,'all')">All Items</button>
+      <button class="filter-chip" onclick="setFilter(this,'replicas')">Replicas</button>
+      <button class="filter-chip" onclick="setFilter(this,'books')">Books & Prints</button>
+      <button class="filter-chip" onclick="setFilter(this,'crafts')">Crafts</button>
+      <button class="filter-chip" onclick="setFilter(this,'souvenirs')">Souvenirs</button>
+      <button class="filter-chip" onclick="setFilter(this,'tickets')">Admission Tickets</button>
+      <div class="filter-search">
+        <span>🔍</span>
+        <input type="text" placeholder="Search products…" oninput="setSearch(this.value)" />
+      </div>
+    </div>
+
+    <div class="cards-grid" id="shop-grid"></div>
+  </div>
+</section>
+
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-header"><h3>🛒 Your Cart</h3><button class="cart-header-close" id="cart-close">✕</button></div>
+  <div class="cart-items" id="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-total-row"><span>Total</span><span id="cart-total">₱0</span></div>
+    <button class="btn btn-gold btn-block btn-lg" onclick="openCheckout()">Proceed to Checkout →</button>
+  </div>
+</aside>
+
+<div class="modal-overlay" id="modal-auth">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-auth')">✕</button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-target="pane-signin">Sign In</button>
+      <button class="auth-tab" data-target="pane-register">Register</button>
+    </div>
+    <div class="auth-pane active" id="pane-signin">
+      <h2>Welcome Back</h2><p class="modal-sub">Sign in to shop online</p>
+      <div class="form-group"><label>Email</label><input type="email" id="si-email" placeholder="your@email.com" /></div>
+      <div class="form-group"><label>Password</label><input type="password" id="si-password" placeholder="••••••••" /></div>
+      <div id="si-error" class="form-error" style="display:none"></div>
+      <button class="btn btn-primary btn-block btn-lg" onclick="handleSignIn()">Sign In →</button>
+    </div>
+    <div class="auth-pane" id="pane-register">
+      <h2>Create Account</h2><p class="modal-sub">Free — takes less than a minute</p>
+      <div class="form-group"><label>Full Name</label><input type="text" id="ru-name" placeholder="Juan dela Cruz" /></div>
+      <div class="form-group"><label>Email</label><input type="email" id="ru-email" placeholder="your@email.com" /></div>
+      <div class="form-row">
+        <div class="form-group"><label>Password</label><input type="password" id="ru-password" placeholder="Min. 6 characters" /></div>
+        <div class="form-group"><label>Confirm</label><input type="password" id="ru-confirm" placeholder="••••••••" /></div>
+      </div>
+      <div id="ru-error" class="form-error" style="display:none"></div>
+      <button class="btn btn-gold btn-block btn-lg" onclick="handleRegister()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-checkout">
+  <div class="modal modal-wide">
+    <button class="modal-close" onclick="closeModal('modal-checkout')">✕</button>
+    <h2>Checkout</h2><p class="modal-sub">Review your order and choose a payment method</p>
+    <div class="form-group"><label>Full Name</label><input type="text" id="co-name" /></div>
+    <div class="form-row">
+      <div class="form-group"><label>Email</label><input type="email" id="co-email" /></div>
+      <div class="form-group"><label>Phone</label><input type="tel" id="co-phone" placeholder="+63 9XX XXX XXXX" /></div>
+    </div>
+    <div class="form-group"><label>Delivery Address <em style="font-weight:400;color:var(--stone-400)">(optional)</em></label><input type="text" id="co-address" /></div>
+    <div class="form-group"><label>Payment Method</label>
+      <div class="payment-grid" id="payment-grid">
+        <button class="payment-opt selected" data-method="GCash" onclick="selectPayment(this)"><span class="pay-icon">📱</span> GCash</button>
+        <button class="payment-opt" data-method="Maya" onclick="selectPayment(this)"><span class="pay-icon">💳</span> Maya</button>
+        <button class="payment-opt" data-method="BPI" onclick="selectPayment(this)"><span class="pay-icon">🏦</span> BPI</button>
+        <button class="payment-opt" data-method="BDO" onclick="selectPayment(this)"><span class="pay-icon">🏦</span> BDO</button>
+        <button class="payment-opt" data-method="Metrobank" onclick="selectPayment(this)"><span class="pay-icon">🏦</span> Metrobank</button>
+        <button class="payment-opt" data-method="UnionBank" onclick="selectPayment(this)"><span class="pay-icon">🏦</span> UnionBank</button>
+      </div>
+    </div>
+    <div class="checkout-summary" id="checkout-summary"></div>
+    <div id="co-error" class="form-error" style="display:none"></div>
+    <button class="btn btn-gold btn-block btn-lg" onclick="placeOrder()">✅ Place Order & Pay</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-receipt">
+  <div class="modal modal-wide">
+    <button class="modal-close" onclick="closeModal('modal-receipt')">✕</button>
+    <div id="receipt-content"></div>
+    <div style="display:flex;gap:0.75rem;margin-top:1.5rem">
+      <button class="btn btn-primary btn-lg" style="flex:1;justify-content:center" onclick="doPrint()">🖨️ Print Receipt</button>
+      <button class="btn btn-outline-green btn-lg" style="flex:1;justify-content:center" onclick="closeModal('modal-receipt')">Close</button>
+    </div>
+  </div>
+</div>
+
+<button id="chatbot-trigger" title="Chat with our guide">💬</button>
+<div id="chatbot-window">
+  <div class="chatbot-head">
+    <div class="chatbot-avatar">🏛️</div>
+    <div class="chatbot-head-info"><h4>Museum Guide</h4><span>● Online</span></div>
+    <button id="chatbot-close">✕</button>
+  </div>
+  <div id="chat-messages"></div>
+  <div class="chat-templates">
+    <div class="chat-templates-label">Quick Questions</div>
+    <div class="chat-template-btns">
+      <button class="chat-tpl-btn" onclick="chatTemplate('What are your opening hours?')">🕐 Hours</button>
+      <button class="chat-tpl-btn" onclick="chatTemplate('How much is the admission ticket?')">🎟️ Tickets</button>
+      <button class="chat-tpl-btn" onclick="chatTemplate('Tell me about the shop')">🛍️ Shop</button>
+      <button class="chat-tpl-btn" onclick="chatTemplate('How do I contact you?')">📞 Contact</button>
+    </div>
+  </div>
+  <div class="chat-input-row">
+    <input id="chat-input" type="text" placeholder="Ask anything…" />
+    <button id="chat-send">➤</button>
+  </div>
+</div>
+<div id="toast-container"></div>
+
+<script src="config.js"></script>
+<script>
+const PRODUCTS = [
+  { id:'p1', name:'Bagobo Brass Betel Box Replica', category:'replicas', price:2500, emoji:'🫙', desc:'Hand-crafted brass replica with traditional okir geometric engravings.' },
+  { id:'p2', name:'Mandaya Woven Wall Tapestry', category:'crafts', price:3800, emoji:'🧶', desc:'Authentic hand-woven abaca tapestry by Mandaya artisans, crocodile motifs.' },
+  { id:'p3', name:'History of Davao — Hardcover', category:'books', price:650, emoji:'📚', desc:'Comprehensive 400-page history of Davao City from pre-colonial to present.' },
+  { id:'p4', name:'Philippine Eagle Skull Cast', category:'replicas', price:1200, emoji:'🦅', desc:'Museum-grade high-fidelity resin cast from archival specimens.' },
+  { id:'p5', name:'Museum Logo Tote Bag', category:'souvenirs', price:250, emoji:'👜', desc:'Eco-friendly canvas tote with embroidered Davao Heritage Museum logo.' },
+  { id:'p6', name:'Tribal Patterns Notebook', category:'souvenirs', price:180, emoji:'📓', desc:'A5 notebook with Mindanao tribal art cover, 200 lined pages.' },
+  { id:'p7', name:'Kulintang Mini Replica Set', category:'replicas', price:1850, emoji:'🥁', desc:'Decorative miniature replica of the traditional Maguindanao gong set.' },
+  { id:'p8', name:'Davao Heritage Enamel Pins (5-pc)', category:'souvenirs', price:390, emoji:'📌', desc:'Set of 5 collectible enamel pins — Davao cultural icons.' },
+  { id:'p9', name:'Single Adult Admission Ticket', category:'tickets', price:50, emoji:'🎟️', desc:'Adult single-entry museum admission. Valid for one visit.' },
+  { id:'p10', name:'Family Pass (2 Adults + 2 Kids)', category:'tickets', price:150, emoji:'🎫', desc:'Family admission for 2 adults + 2 children under 12.' },
+  { id:'p11', name:'Maguindanao Bead Bracelet', category:'crafts', price:320, emoji:'📿', desc:'Traditional handmade bead bracelet from Maguindanao craftswomen.' },
+  { id:'p12', name:'Davao Heritage Photo Print Set', category:'books', price:450, emoji:'🖼️', desc:'10 archival-quality photo prints of historic Davao landmarks.' },
+];
+
+let activeFilter = 'all', searchQuery = '';
+
+async function loadProducts() {
+  try {
+    const { data, error } = await _supabase.from('products').select('*').eq('is_active', true).order('name');
+    if (data && data.length > 0) { renderProducts(data); return; }
+  } catch(e) {}
+  renderProducts(PRODUCTS);
+}
+
+function renderProducts(list) {
+  const filtered = list.filter(p => {
+    const matchCat    = activeFilter === 'all' || p.category === activeFilter;
+    const matchSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery) || (p.desc||p.description||'').toLowerCase().includes(searchQuery);
+    return matchCat && matchSearch;
+  });
+  const grid = document.getElementById('shop-grid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--stone-400)"><div style="font-size:3rem;margin-bottom:1rem">🔍</div><p>No products found for your search.</p></div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(p => `
+    <div class="product-card">
+      <div class="product-thumb">${p.emoji}</div>
+      <div class="product-body">
+        <div class="product-category">${p.category}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${p.description || p.desc}</div>
+        <div class="product-footer">
+          <span class="product-price">₱${Number(p.price).toLocaleString()}</span>
+          <button class="btn-add" onclick="handleAdd({id:'${p.id}',name:'${p.name}',price:${p.price},emoji:'${p.emoji}'})">+ Cart</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function handleAdd(product) {
+  if (!currentUser) {
+    document.getElementById('auth-banner').style.display = 'flex';
+    openModal('modal-auth');
+    return;
+  }
+  cartAdd(product);
+}
+
+function setFilter(btn, cat) {
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = cat;
+  loadProducts();
+}
+
+function setSearch(val) {
+  searchQuery = val.toLowerCase();
+  loadProducts();
+}
+
+setTimeout(() => {
+  if (!currentUser) document.getElementById('auth-banner').style.display = 'flex';
+}, 800);
+
+let selectedPayment = 'GCash', lastOrder = null;
+function openCheckout() {
+  if (!requireAuth()) return;
+  if (!cart.length) { toast('Your cart is empty.', 'warning'); return; }
+  document.getElementById('co-name').value  = currentProfile?.full_name || '';
+  document.getElementById('co-email').value = currentUser?.email || '';
+  const s = document.getElementById('checkout-summary');
+  s.innerHTML = `<strong style="display:block;color:var(--green-800);margin-bottom:.5rem">Order Summary</strong>${cart.map(i=>`<div class="checkout-summary-line"><span>${i.name} <em style="color:var(--stone-400)">×${i.qty}</em></span><span>₱${(i.price*i.qty).toLocaleString()}</span></div>`).join('')}<div class="checkout-summary-total"><span>Total</span><span>₱${cartTotal().toLocaleString()}</span></div>`;
+  document.getElementById('cart-sidebar').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('open');
+  openModal('modal-checkout');
+}
+function selectPayment(btn) { document.querySelectorAll('.payment-opt').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedPayment=btn.dataset.method; }
+async function placeOrder() {
+  const name=document.getElementById('co-name').value.trim(), email=document.getElementById('co-email').value.trim();
+  const errEl=document.getElementById('co-error'); errEl.style.display='none';
+  if(!name||!email){errEl.textContent='Please fill in your name and email.';errEl.style.display='block';return;}
+  const orderNumber='DHM-'+Date.now().toString().slice(-8);
+  const orderData={order_number:orderNumber,user_id:currentUser?.id,buyer_name:name,buyer_email:email,buyer_phone:document.getElementById('co-phone').value.trim()||null,delivery_address:document.getElementById('co-address').value.trim()||null,items:cart,total:cartTotal(),payment_method:selectedPayment,status:'pending'};
+  try{await _supabase.from('orders').insert(orderData);}catch(e){console.warn(e);}
+  lastOrder={...orderData,date:new Date().toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'})};
+  cart=[];_cartSave();_cartUpdateBadge();
+  closeModal('modal-checkout');
+  document.getElementById('receipt-content').innerHTML=buildReceiptHTML(lastOrder);
+  openModal('modal-receipt');
+  toast('🎉 Order placed successfully!','success');
+}
+function doPrint(){if(lastOrder)printReceipt(lastOrder);}
+async function handleSignIn(){const email=document.getElementById('si-email').value.trim(),password=document.getElementById('si-password').value,e=document.getElementById('si-error');e.style.display='none';if(!email||!password){e.textContent='Please enter email and password.';e.style.display='block';return;}try{await authSignIn(email,password);closeModal('modal-auth');document.getElementById('auth-banner').style.display='none';toast('Signed in successfully.','success');}catch(err){e.textContent=err.message;e.style.display='block';}}
+async function handleRegister(){const name=document.getElementById('ru-name').value.trim(),email=document.getElementById('ru-email').value.trim(),password=document.getElementById('ru-password').value,confirm=document.getElementById('ru-confirm').value,e=document.getElementById('ru-error');e.style.display='none';if(!name||!email||!password){e.textContent='Please fill in all fields.';e.style.display='block';return;}if(password!==confirm){e.textContent='Passwords do not match.';e.style.display='block';return;}try{await authSignUp(email,password,name);closeModal('modal-auth');document.getElementById('auth-banner').style.display='none';toast('Account created! Check email to verify.','success');}catch(err){e.textContent=err.message;e.style.display='block';}}
+
+loadProducts();
+</script>
+</body>
+</html>

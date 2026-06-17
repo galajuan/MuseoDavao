@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Davao Heritage Museum</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- ═══════════════ NAVBAR ═══════════════ -->
+<nav class="nav" id="main-nav">
+  <a href="index.html" class="nav-brand">
+    <div class="nav-brand-icon">🏛️</div>
+    <div class="nav-brand-text">
+      <span class="nav-brand-name">Davao Heritage Museum</span>
+      <span class="nav-brand-sub">Davao City, Philippines</span>
+    </div>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="collection.html">Collection</a></li>
+    <li><a href="shop.html">Shop</a></li>
+    <li><a href="pages/events.html">Events</a></li>
+    <li><a href="pages/about.html">About</a></li>
+  </ul>
+
+  <div class="nav-actions">
+    <button class="nav-cart-btn" id="btn-cart">
+      🛒 Cart
+      <span id="cart-badge" class="hidden">0</span>
+    </button>
+    <button class="btn btn-outline-white btn-sm" id="btn-login" onclick="openModal('modal-auth')">Sign In</button>
+    <button class="btn btn-gold btn-sm" id="btn-register" onclick="openModal('modal-auth'); switchAuthTab('register')">Register</button>
+    <div id="user-menu" class="hidden" style="display:flex;align-items:center;gap:0.5rem">
+      <span id="user-label" style="color:rgba(255,255,255,.8);font-size:0.85rem"></span>
+      <button class="btn btn-outline-white btn-sm" id="btn-signout">Sign Out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-inner">
+
+      <div class="hero-left">
+        <div class="hero-kicker">
+          🌿 Preserving Davao's Living Heritage Since 1982
+        </div>
+        <h1 class="hero-title">
+          Discover the <em>Heart</em> of<br>Davao's Culture
+        </h1>
+        <p class="hero-desc">
+          Explore over 2,400 artifacts — from Bagobo brassware and Mandaya textiles
+          to colonial relics and Mindanao's remarkable natural history. A living archive
+          of the people and land of Davao.
+        </p>
+        <div class="hero-ctas">
+          <a href="collection.html" class="btn btn-gold btn-lg">🏺 Explore Collection</a>
+          <a href="shop.html" class="btn btn-outline-white btn-lg">🛍️ Visit Shop</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="hero-stat-num">2,400+</div>
+            <div class="hero-stat-label">Artifacts</div>
+          </div>
+          <div>
+            <div class="hero-stat-num">42</div>
+            <div class="hero-stat-label">Exhibit Halls</div>
+          </div>
+          <div>
+            <div class="hero-stat-num">1982</div>
+            <div class="hero-stat-label">Est. Year</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-cards">
+        <div class="hero-card hero-card--gold">
+          <div class="hero-card-icon">🎭</div>
+          <div>
+            <h4>Tribal Artifacts Gallery</h4>
+            <p>Bagobo, Mandaya & Maguindanao indigenous collections</p>
+          </div>
+        </div>
+        <div class="hero-card">
+          <div class="hero-card-icon">🦴</div>
+          <div>
+            <h4>Natural History Hall</h4>
+            <p>Fossils, fauna, and flora of Mindanao</p>
+          </div>
+        </div>
+        <div class="hero-card">
+          <div class="hero-card-icon">📜</div>
+          <div>
+            <h4>Colonial Era Gallery</h4>
+            <p>Spanish & American period relics</p>
+          </div>
+        </div>
+        <div class="hero-card hero-card--map" onclick="goToMap()">
+          <div class="hero-card-icon">📍</div>
+          <div>
+            <h4>Find Us on the Map</h4>
+            <p>Davao City Museum Complex — click to open Google Maps ↗</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PARTNER MUSEUMS ═══════════════ -->
+<section class="partners-bar">
+  <div class="container partners-bar-inner">
+    <div class="eyebrow" style="color:var(--green-300)">Partner Museums in Davao City</div>
+    <h2 style="color:var(--white);margin-bottom:0.25rem">Explore More of Davao's Heritage</h2>
+    <p style="color:rgba(255,255,255,.5);font-size:0.9rem">Three world-class museums, one city — click any to visit their site</p>
+    <div class="partners-grid">
+
+      <a href="https://www.facebook.com/DBoneCollectorMuseum" target="_blank" rel="noopener" class="partner-card">
+        <div class="partner-icon">🦴</div>
+        <div class="partner-name">D'Bone Collector Museum</div>
+        <p class="partner-desc">The largest private collection of animal bones and taxidermy in Southeast Asia, showcasing the wildlife of Mindanao.</p>
+        <div class="partner-link">Visit Website ↗</div>
+      </a>
+
+      <a href="https://www.facebook.com/MuseoDabawenyo" target="_blank" rel="noopener" class="partner-card">
+        <div class="partner-icon">🏺</div>
+        <div class="partner-name">Museo Dabawenyo</div>
+        <p class="partner-desc">Chronicles the rich history and diverse cultures of Davao through permanent exhibits, art installations, and indigenous artifacts.</p>
+        <div class="partner-link">Visit Website ↗</div>
+      </a>
+
+      <a href="https://www.nationalmuseum.gov.ph" target="_blank" rel="noopener" class="partner-card">
+        <div class="partner-icon">🇵🇭</div>
+        <div class="partner-name">National Museum — Davao</div>
+        <p class="partner-desc">The official Philippine national collection featuring archaeological finds, fine arts, and ethnographic treasures in the Davao region.</p>
+        <div class="partner-link">Visit Website ↗</div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FEATURED COLLECTION ═══════════════ -->
+<section class="section" style="background:var(--cream)">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:3rem">
+      <div class="eyebrow">Featured Highlights</div>
+      <h2 class="section-title">Notable Pieces in Our Collection</h2>
+      <p class="section-sub" style="margin:0.5rem auto 0">A glimpse into the thousands of artifacts that tell the story of Davao and the peoples of Mindanao.</p>
+    </div>
+    <div class="cards-grid" id="home-collection"></div>
+    <div class="text-center" style="margin-top:2.5rem">
+      <a href="pages/collection.html" class="btn btn-primary btn-lg">View Full Collection →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ MAP SECTION ═══════════════ -->
+<section class="section map-section" id="map-section">
+  <div class="container">
+    <div class="map-layout">
+
+      <div class="map-visual" onclick="goToMap()" title="Open in Google Maps">
+        <div class="map-placeholder">
+          <span class="map-pin-anim">📍</span>
+          <div class="map-label">Davao Heritage Museum</div>
+          <div class="map-sublabel">Davao City, Davao del Sur</div>
+        </div>
+        <div class="map-cta-bar">
+          <span>📍 Click to open in Google Maps</span>
+          <span>↗</span>
+        </div>
+      </div>
+
+      <div class="map-info">
+        <div class="eyebrow">Find Us</div>
+        <h3>Visit the Museum</h3>
+        <p style="color:var(--stone-600);font-size:0.9rem;line-height:1.7;margin-bottom:1.5rem">
+          Located in the heart of Davao City, our museum is easily accessible from major landmarks.
+          We welcome walk-ins and scheduled group tours from Monday to Saturday.
+        </p>
+        <div class="map-detail"><span class="map-detail-icon">📍</span> Davao City Museum Complex, Davao City</div>
+        <div class="map-detail"><span class="map-detail-icon">🕐</span> Mon – Sat: 8:00 AM – 5:00 PM</div>
+        <div class="map-detail"><span class="map-detail-icon">🚌</span> Accessible via Jeepney Route 7-B & 11-C</div>
+        <div class="map-detail"><span class="map-detail-icon">📞</span> +63 82 227-0000</div>
+        <div class="map-detail"><span class="map-detail-icon">✉️</span> heritage@davaomuseum.gov.ph</div>
+        <div class="map-actions">
+          <button class="btn btn-primary" onclick="goToMap()">🗺️ Open Google Maps</button>
+          <a href="pages/about.html" class="btn btn-outline-green">Learn More</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ SHOP PROMO ═══════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="promo-banner">
+      <div>
+        <div class="eyebrow" style="color:var(--gold-300)">Museum Shop</div>
+        <h2>Bring Home a Piece of History</h2>
+        <p>Browse our curated collection of artifact replicas, books, traditional crafts, and souvenirs. Register or sign in to purchase online with secure payment.</p>
+      </div>
+      <div class="promo-actions">
+        <a href="pages/shop.html" class="btn btn-gold btn-lg">🛍️ Shop Now</a>
+        <button class="btn btn-outline-white btn-lg" onclick="openModal('modal-auth'); switchAuthTab('register')">👤 Create Free Account</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">🏛️ Davao Heritage Museum</div>
+        <p class="footer-brand-desc">Preserving the cultural and natural heritage of Davao City and the greater Mindanao region for future generations.</p>
+        <div class="footer-socials">
+          <div class="footer-social" title="Facebook">📘</div>
+          <div class="footer-social" title="Instagram">📸</div>
+          <div class="footer-social" title="YouTube">▶️</div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Explore</h5>
+        <ul>
+          <li><a href="pages/collection.html">Collection</a></li>
+          <li><a href="pages/shop.html">Shop</a></li>
+          <li><a href="pages/events.html">Events</a></li>
+          <li><a href="pages/about.html">About Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Partners</h5>
+        <ul>
+          <li><a href="https://www.facebook.com/DBoneCollectorMuseum" target="_blank">D'Bone Museum</a></li>
+          <li><a href="https://www.facebook.com/MuseoDabawenyo" target="_blank">Museo Dabawenyo</a></li>
+          <li><a href="https://www.nationalmuseum.gov.ph" target="_blank">National Museum</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Visit</h5>
+        <ul>
+          <li><a href="#" onclick="goToMap();return false">📍 Get Directions</a></li>
+          <li><a href="#">Mon–Sat: 8 AM – 5 PM</a></li>
+          <li><a href="tel:+6382227000">+63 82 227-0000</a></li>
+          <li><a href="pages/admin/login.html">Admin Portal</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Davao Heritage Museum. All rights reserved.</span>
+      <span>Davao City, Philippines 🇵🇭</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════ CART SIDEBAR ═══════════════ -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-header">
+    <h3>🛒 Your Cart</h3>
+    <button class="cart-header-close" id="cart-close">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-total-row">
+      <span>Total</span>
+      <span id="cart-total">₱0</span>
+    </div>
+    <button class="btn btn-gold btn-block btn-lg" onclick="openCheckout()">Proceed to Checkout →</button>
+  </div>
+</aside>
+
+<!-- ═══════════════ AUTH MODAL ═══════════════ -->
+<div class="modal-overlay" id="modal-auth">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-auth')">✕</button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-target="pane-signin">Sign In</button>
+      <button class="auth-tab" data-target="pane-register">Register</button>
+    </div>
+
+    <!-- SIGN IN -->
+    <div class="auth-pane active" id="pane-signin">
+      <h2>Welcome Back</h2>
+      <p class="modal-sub">Sign in to your museum account</p>
+      <div class="form-group"><label>Email Address</label><input type="email" id="si-email" placeholder="your@email.com" autocomplete="email" /></div>
+      <div class="form-group"><label>Password</label><input type="password" id="si-password" placeholder="••••••••" autocomplete="current-password" /></div>
+      <div id="si-error" class="form-error" style="display:none"></div>
+      <button class="btn btn-primary btn-block btn-lg" onclick="handleSignIn()">Sign In →</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="auth-pane" id="pane-register">
+      <h2>Create Account</h2>
+      <p class="modal-sub">Free — takes less than a minute</p>
+      <div class="form-group"><label>Full Name</label><input type="text" id="ru-name" placeholder="Juan dela Cruz" autocomplete="name" /></div>
+      <div class="form-group"><label>Email Address</label><input type="email" id="ru-email" placeholder="your@email.com" autocomplete="email" /></div>
+      <div class="form-row">
+        <div class="form-group"><label>Password</label><input type="password" id="ru-password" placeholder="Min. 6 characters" /></div>
+        <div class="form-group"><label>Confirm Password</label><input type="password" id="ru-confirm" placeholder="••••••••" /></div>
+      </div>
+      <div id="ru-error" class="form-error" style="display:none"></div>
+      <button class="btn btn-gold btn-block btn-lg" onclick="handleRegister()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CHECKOUT MODAL ═══════════════ -->
+<div class="modal-overlay" id="modal-checkout">
+  <div class="modal modal-wide">
+    <button class="modal-close" onclick="closeModal('modal-checkout')">✕</button>
+    <h2>Checkout</h2>
+    <p class="modal-sub">Review your order and choose a payment method</p>
+
+    <div class="form-group"><label>Full Name</label><input type="text" id="co-name" placeholder="Juan dela Cruz" /></div>
+    <div class="form-row">
+      <div class="form-group"><label>Email</label><input type="email" id="co-email" /></div>
+      <div class="form-group"><label>Phone Number</label><input type="tel" id="co-phone" placeholder="+63 9XX XXX XXXX" /></div>
+    </div>
+    <div class="form-group"><label>Delivery Address <em style="font-weight:400;color:var(--stone-400)">(optional)</em></label><input type="text" id="co-address" placeholder="Street, Barangay, City — if ordering merchandise" /></div>
+
+    <div class="form-group">
+      <label>Payment Method</label>
+      <div class="payment-grid" id="payment-grid">
+        <button class="payment-opt selected" data-method="GCash" onclick="selectPayment(this)"><span class="pay-icon">📱</span> GCash</button>
+        <button class="payment-opt" data-method="Maya" onclick="selectPayment(this)"><span class="pay-icon">💳</span> Maya</button>
+        <button class="payment-opt" data-method="BPI" onclick="selectPayment(this)"><span class="pay-icon">🏦</span> BPI</button>
+        <button class="payment-opt" data-method="BDO" onclick="selectPayment(this)"><span class="pay-icon">🏦</span> BDO</button>
+        <button class="payment-opt" data-method="Metrobank" onclick="selectPayment(this)"><span class="pay-icon">🏦</span> Metrobank</button>
+        <button class="payment-opt" data-method="UnionBank" onclick="selectPayment(this)"><span class="pay-icon">🏦</span> UnionBank</button>
+      </div>
+    </div>
+
+    <div class="checkout-summary" id="checkout-summary"></div>
+    <div id="co-error" class="form-error" style="display:none"></div>
+    <button class="btn btn-gold btn-block btn-lg" onclick="placeOrder()">✅ Place Order & Pay</button>
+  </div>
+</div>
+
+<!-- ═══════════════ RECEIPT MODAL ═══════════════ -->
+<div class="modal-overlay" id="modal-receipt">
+  <div class="modal modal-wide">
+    <button class="modal-close" onclick="closeModal('modal-receipt')">✕</button>
+    <div id="receipt-content"></div>
+    <div style="display:flex;gap:0.75rem;margin-top:1.5rem">
+      <button class="btn btn-primary btn-lg" style="flex:1;justify-content:center" onclick="doPrint()">🖨️ Print Receipt</button>
+      <button class="btn btn-outline-green btn-lg" style="flex:1;justify-content:center" onclick="closeModal('modal-receipt')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CHATBOT ═══════════════ -->
+<button id="chatbot-trigger" title="Chat with our guide">💬</button>
+
+<div id="chatbot-window">
+  <div class="chatbot-head">
+    <div class="chatbot-avatar">🏛️</div>
+    <div class="chatbot-head-info">
+      <h4>Museum Guide</h4>
+      <span>● Online — replies instantly</span>
+    </div>
+    <button id="chatbot-close">✕</button>
+  </div>
+
+  <div id="chat-messages"></div>
+
+  <div class="chat-templates">
+    <div class="chat-templates-label">Quick Questions</div>
+    <div class="chat-template-btns">
+      <button class="chat-tpl-btn" onclick="chatTemplate('What are your opening hours?')">🕐 Hours</button>
+      <button class="chat-tpl-btn" onclick="chatTemplate('Where is the museum located?')">📍 Location</button>
+      <button class="chat-tpl-btn" onclick="chatTemplate('How much is the admission ticket?')">🎟️ Tickets</button>
+      <button class="chat-tpl-btn" onclick="chatTemplate('What is in your collection?')">🏺 Collection</button>
+      <button class="chat-tpl-btn" onclick="chatTemplate('Tell me about the shop')">🛍️ Shop</button>
+      <button class="chat-tpl-btn" onclick="chatTemplate('What partner museums do you have?')">🤝 Partners</button>
+      <button class="chat-tpl-btn" onclick="chatTemplate('Is there parking available?')">🚗 Parking</button>
+      <button class="chat-tpl-btn" onclick="chatTemplate('Do you offer group tours?')">👥 Group Tours</button>
+      <button class="chat-tpl-btn" onclick="chatTemplate('How do I contact you?')">📞 Contact</button>
+    </div>
+  </div>
+
+  <div class="chat-input-row">
+    <input id="chat-input" type="text" placeholder="Ask me anything about the museum…" />
+    <button id="chat-send">➤</button>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="config.js"></script>
+<script>
+// ── Navbar scroll effect ──────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ── Featured Collection ───────────────────────────────────────
+const FEATURED = [
+  { id: 'f1', name: 'Bagobo Brass Betel Box', category: 'Indigenous Artifacts', price: 2500, emoji: '🫙', desc: 'Ceremonial brass container used in Bagobo courtship rituals. Intricate okir engravings.' },
+  { id: 'f2', name: 'Mandaya Dagmay Tapestry', category: 'Textile Arts', price: 3800, emoji: '🧶', desc: 'Rare hand-woven abaca tapestry featuring ancestral crocodile motifs.' },
+  { id: 'f3', name: 'Colonial-Era Oil Lamp', category: 'Colonial Period', price: 1800, emoji: '🪔', desc: 'Spanish colonial period lamp, circa 1850s, excavated near Davao River.' },
+  { id: 'f4', name: 'Philippine Eagle Skull Cast', category: 'Natural History', price: 1200, emoji: '🦅', desc: 'Museum-grade resin cast from archival specimens of the national bird.' },
+];
+
+document.getElementById('home-collection').innerHTML = FEATURED.map(item => `
+  <div class="product-card">
+    <div class="product-thumb">${item.emoji}</div>
+    <div class="product-body">
+      <div class="product-category">${item.category}</div>
+      <div class="product-name">${item.name}</div>
+      <div class="product-desc">${item.desc}</div>
+      <div class="product-footer">
+        <span class="product-price">₱${item.price.toLocaleString()}</span>
+        <button class="btn-add" onclick="cartAdd({id:'${item.id}',name:'${item.name}',price:${item.price},emoji:'${item.emoji}'})">+ Cart</button>
+      </div>
+    </div>
+  </div>
+`).join('');
+
+// ── Auth handlers ─────────────────────────────────────────────
+async function handleSignIn() {
+  const email    = document.getElementById('si-email').value.trim();
+  const password = document.getElementById('si-password').value;
+  const errEl    = document.getElementById('si-error');
+  errEl.style.display = 'none';
+  if (!email || !password) { errEl.textContent = 'Please enter your email and password.'; errEl.style.display = 'block'; return; }
+  try {
+    await authSignIn(email, password);
+    closeModal('modal-auth');
+    toast('Welcome back! You are now signed in.', 'success');
+  } catch (e) {
+    errEl.textContent = e.message || 'Sign-in failed. Please check your credentials.';
+    errEl.style.display = 'block';
+  }
+}
+
+async function handleRegister() {
+  const name     = document.getElementById('ru-name').value.trim();
+  const email    = document.getElementById('ru-email').value.trim();
+  const password = document.getElementById('ru-password').value;
+  const confirm  = document.getElementById('ru-confirm').value;
+  const errEl    = document.getElementById('ru-error');
+  errEl.style.display = 'none';
+  if (!name || !email || !password) { errEl.textContent = 'Please fill in all required fields.'; errEl.style.display = 'block'; return; }
+  if (password !== confirm)          { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+  if (password.length < 6)           { errEl.textContent = 'Password must be at least 6 characters.'; errEl.style.display = 'block'; return; }
+  try {
+    await authSignUp(email, password, name);
+    closeModal('modal-auth');
+    toast('Account created! Please check your email to verify your address.', 'success');
+  } catch (e) {
+    errEl.textContent = e.message || 'Registration failed.';
+    errEl.style.display = 'block';
+  }
+}
+
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => {
+    const isTarget = (tab === 'register') ? i === 1 : i === 0;
+    t.classList.toggle('active', isTarget);
+    document.getElementById(t.dataset.target)?.classList.toggle('active', isTarget);
+  });
+}
+
+// ── Checkout ──────────────────────────────────────────────────
+let selectedPayment = 'GCash';
+let lastOrder = null;
+
+function openCheckout() {
+  if (!requireAuth('Please sign in before checking out.')) return;
+  if (cart.length === 0) { toast('Your cart is empty.', 'warning'); return; }
+
+  // Pre-fill user details
+  document.getElementById('co-name').value  = currentProfile?.full_name || '';
+  document.getElementById('co-email').value = currentUser?.email || '';
+
+  // Render summary
+  const sumEl = document.getElementById('checkout-summary');
+  sumEl.innerHTML = `
+    <strong style="display:block;color:var(--green-800);margin-bottom:0.5rem">Order Summary</strong>
+    ${cart.map(i => `<div class="checkout-summary-line"><span>${i.name} <em style="color:var(--stone-400)">×${i.qty}</em></span><span>₱${(i.price*i.qty).toLocaleString()}</span></div>`).join('')}
+    <div class="checkout-summary-total"><span>Total</span><span>₱${cartTotal().toLocaleString()}</span></div>
+  `;
+
+  document.getElementById('cart-sidebar').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('open');
+  openModal('modal-checkout');
+}
+
+function selectPayment(btn) {
+  document.querySelectorAll('.payment-opt').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedPayment = btn.dataset.method;
+}
+
+async function placeOrder() {
+  const name  = document.getElementById('co-name').value.trim();
+  const email = document.getElementById('co-email').value.trim();
+  const phone = document.getElementById('co-phone').value.trim();
+  const addr  = document.getElementById('co-address').value.trim();
+  const errEl = document.getElementById('co-error');
+  errEl.style.display = 'none';
+
+  if (!name || !email) { errEl.textContent = 'Please fill in your name and email.'; errEl.style.display = 'block'; return; }
+
+  const orderNumber = 'DHM-' + Date.now().toString().slice(-8);
+  const orderData = {
+    order_number:    orderNumber,
+    user_id:         currentUser?.id,
+    buyer_name:      name,
+    buyer_email:     email,
+    buyer_phone:     phone || null,
+    delivery_address: addr || null,
+    items:           cart,
+    total:           cartTotal(),
+    payment_method:  selectedPayment,
+    status:          'pending',
+  };
+
+  // Save to Supabase
+  try {
+    const { error } = await _supabase.from('orders').insert(orderData);
+    if (error) throw error;
+  } catch(e) {
+    console.warn('Supabase order insert:', e.message);
+    // Continue anyway (demo mode)
+  }
+
+  lastOrder = {
+    ...orderData,
+    date: new Date().toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' })
+  };
+
+  // Clear cart
+  cart = [];
+  _cartSave();
+  _cartUpdateBadge();
+
+  closeModal('modal-checkout');
+  document.getElementById('receipt-content').innerHTML = buildReceiptHTML(lastOrder);
+  openModal('modal-receipt');
+  toast('🎉 Order placed successfully!', 'success');
+}
+
+function doPrint() { if (lastOrder) printReceipt(lastOrder); }
+</script>
+</body>
+</html>
